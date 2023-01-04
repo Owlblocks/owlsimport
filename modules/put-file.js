@@ -26,7 +26,8 @@ PUT /files/:filepath
         if(path.relative(baseFilename,filename).indexOf("..") !== 0) {
             // Write the file
             var data = state.data;
-            var buf = Buffer.from(data, "base64");
+            var encoding = $tw.utils.getTypeEncoding(extension);
+            var buf = Buffer.from(data, encoding);
             fs.writeFile(filename, buf, function(err) {
                 var status,content,type = "text/plain";
                 if(err) {
