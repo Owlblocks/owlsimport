@@ -35,6 +35,8 @@ title: $:/core/ui/ViewTemplate/body/import
 {{||$:/core/ui/ImportListing}}
 
 <<buttons>>
+Image Subfolder:
+<$edit-text tiddler="$:/Owlblocks/OwlsImport/ImportLogic" field="image-subfolder" />
 
 </div>
 

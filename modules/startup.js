@@ -15,6 +15,9 @@ module-type: startup
     exports.after = ["startup"];
     exports.synchronous = true;
 
+    var IMPORT_LOGIC = "$:/Owlblocks/OwlsImport/ImportLogic";
+    var SUBFOLDER_VAR = "image-subfolder";
+
     exports.startup = function() {
         /*
         $tw.hooks.addHook("th-importing-file", function(info) {
@@ -34,10 +37,22 @@ module-type: startup
             if($tw.config.contentTypeInfo[tiddler.fields.type].flags.includes("image")) {
                 // console.log(`Type ${tiddler.fields.type} IS image type`);
 
+                var logic = $tw.wiki.getTiddler(IMPORT_LOGIC);
+                var subfolder = "";
+                if(logic && logic.fields[SUBFOLDER_VAR]) {
+                    subfolder = logic.fields[SUBFOLDER_VAR];
+                    if(subfolder.startsWith("/")) {
+                        subfolder = subfolder.substring(1);
+                    }
+                    if(!subfolder.endsWith("/")) {
+                        subfolder += "/";
+                    }
+                }
+
                 var type = (tiddler.fields.type /*"application/octet-stream"*/);
                 var headers = { "Content-Type": type };
                 $tw.utils.httpRequest({
-                    url: $tw.syncadaptor.host + "files/" + tiddler.fields.title,
+                    url: $tw.syncadaptor.host + "files/" + subfolder + tiddler.fields.title,
                     type: "PUT",
                     headers: headers,
                     data: tiddler.fields.text,
@@ -50,7 +65,7 @@ module-type: startup
                         }
                     }
                 });
-                return new $tw.Tiddler(tiddler, { "text": "", "_canonical_uri": `./files/${tiddler.fields.title}` });
+                return new $tw.Tiddler(tiddler, { "text": "", "_canonical_uri": "./files/" + subfolder + tiddler.fields.title });
             }
             else {
                 // console.log(`Type ${tiddler.type} is NOT an image type`);
