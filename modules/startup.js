@@ -31,7 +31,7 @@ module-type: startup
        console.log($tw.config);
         $tw.hooks.addHook("th-importing-tiddler", function(tiddler) {
             console.log("importing-tiddler");
-            if(/^image\/(.+)$/.exec(tiddler.fields.type)) {
+            if($tw.config.contentTypeInfo[tiddler.fields.type].flags.includes("image")) {
                 // console.log(`Type ${tiddler.fields.type} IS image type`);
 
                 var type = (tiddler.fields.type /*"application/octet-stream"*/);
