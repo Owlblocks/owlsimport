@@ -13,7 +13,7 @@ PUT /files/:filepath
     exports.method = "PUT";
     
     exports.path = /^\/files\/(.+)$/;
-    
+
     exports.handler = function(request,response,state) {
         var path = require("path"),
             fs = require("fs"), 
@@ -28,18 +28,25 @@ PUT /files/:filepath
             var data = state.data;
             var encoding = $tw.utils.getTypeEncoding(extension);
             var buf = Buffer.from(data, encoding);
-            fs.writeFile(filename, buf, function(err) {
-                var status,content,type = "text/plain";
+            fs.mkdir(path.dirname(filename), { recursive: true }, function(err) {
                 if(err) {
-                    console.log("Error writing file" + filename + ": " + err.toString());
-                    status = 400;
-                    content = `Couldn't save file '${suppliedFilename}'.`
-                } else {
-                    status = 200;
-                    content = "Success saving file.";
-
+                    console.log(err);
                 }
-                state.sendResponse(status,{"Content-Type": type},content);
+                else {
+                    fs.writeFile(filename, buf, function(err) {
+                        var status,content,type = "text/plain";
+                        if(err) {
+                            console.log("Error writing file" + filename + ": " + err.toString());
+                            status = 400;
+                            content = `Couldn't save file '${suppliedFilename}'.`
+                        } else {
+                            status = 200;
+                            content = "Success saving file.";
+        
+                        }
+                        state.sendResponse(status,{"Content-Type": type},content);
+                    })
+                }
             })
         } else {
             state.sendResponse(400,{"Content-Type": "text/plain"},"File '" + suppliedFilename + "' not found");
